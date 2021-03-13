@@ -136,8 +136,8 @@ script:
   - python setup.py bdist_wheel
   - pip install ./dist/*.whl
   - curl -fsSL -o coala-bears.zip $BEARS_ZIP_URL/master
-  - coala --non-interactive
   - pip install coala-bears.zip[alldeps]
+  - coala --non-interactive
   - python setup.py docs
   - .ci/check_man.sh
 
