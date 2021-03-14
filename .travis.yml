@@ -137,6 +137,7 @@ script:
   - pip install ./dist/*.whl
   - curl -fsSL -o coala-bears.zip $BEARS_ZIP_URL/master
   - pip install coala-bears.zip[alldeps]
+  - pip install bandit==1.2
   - coala --non-interactive
   - python setup.py docs
   - .ci/check_man.sh
