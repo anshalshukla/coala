@@ -467,8 +467,12 @@ class ConfigurationGatheringCollectionTest(unittest.TestCase):
         self.assertEqual(len(local_bears['cli']), TEST_BEARS_COUNT)
 
         test_string = [str(bear) for bear in local_bears['cli']]
-        test_bear_name_reprs_regex = [test.replace('(', '\\(').replace(')', '\)') for test in TEST_BEAR_NAME_REPRS]
-        pattern_string = [f'{test}'[0:-1] + '( at \\(0x[a-fA-F0-9]+\\))?>' for test in test_bear_name_reprs_regex]
+        # Start ignoring LineLengthBear, PycodestyleBear
+        test_bear_name_reprs_regex = [test.replace(
+            '(', '\\(').replace(')', '\\)') for test in TEST_BEAR_NAME_REPRS]
+        pattern_string = [f'{test}'[
+            0:-1] + '( at \\(0x[a-fA-F0-9]+\\))?>' for test in test_bear_name_reprs_regex]
+        # Stop ignoring
 
         for test, pattern in zip(test_string, pattern_string):
             self.assertRegex(test, pattern)

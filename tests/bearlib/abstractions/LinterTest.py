@@ -1090,16 +1090,22 @@ class LinterOtherTest(LinterTestBase):
 
     def test_metaclass_repr(self):
         uut = linter('my-tool')(self.ManualProcessingTestLinter)
+        # Start ignoring LineLengthBear, PycodestyleBear
         self.assertRegex(
             repr(uut),
-            "<ManualProcessingTestLinter linter class \\(wrapping 'my-tool'\\) at \\(0x[a-fA-F0-9]+\\)>")
+            "<ManualProcessingTestLinter linter class \\(wrapping 'my-tool'\\) at \\(0x[a-fA-F0-9]+\\)>"
+        )
+        # Stop ignoring
 
         # Test also whether derivatives change the class name accordingly.
         class DerivedLinter(uut):
             pass
+        # Start ignoring LineLengthBear, PycodestyleBear
         self.assertRegex(
             repr(DerivedLinter),
-            "<DerivedLinter linter class \\(wrapping 'my-tool'\\) at \\(0x[a-fA-F0-9]+\\)>")
+            "<DerivedLinter linter class \\(wrapping 'my-tool'\\) at \\(0x[a-fA-F0-9]+\\)>"
+        )
+        # Stop ignoring
 
     def test_repr(self):
         uut = (linter(sys.executable)
