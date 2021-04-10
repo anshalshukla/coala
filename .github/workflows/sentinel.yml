@@ -1,0 +1,52 @@
+name: sentinel
+
+# Start ignoring YAMLLintBear
+on: [push]
+# Stop ignoring
+
+jobs:
+  build:
+    runs-on: ubuntu-16.04
+    env:
+      BEARS_ZIP_URL: https://codeload.github.com/coala/coala-bears/zip
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.6.9'
+      - name: Setup JDK
+        uses: AdoptOpenJDK/install-jdk@v1
+        with:
+          version: '8'
+      - name: before_install
+        run: |
+          pip install --prefer-binary cffi lxml
+          pip uninstall setuptools --yes
+          pip install pip==9.0.3 setuptools==21.2.2
+          python .misc/check_setuptools.py
+          cp requirements.txt requirements.orig
+          cat test-requirements.txt docs-requirements.txt >> requirements.txt
+          sed -i.bak '/^-r/d' requirements.txt
+          npm install --no-save
+          sudo npm i -g csslint
+      - name: install
+        run: |
+          pip install -r requirements.txt
+      - name: before_script
+        run: |
+          mv requirements.orig requirements.txt
+          python .misc/check_setuptools.py
+          sed -i.bak '/^-r/d' requirements.txt
+      - name: script
+        run: |
+          py.test
+          python setup.py bdist_wheel
+          pip install ./dist/*.whl
+          curl -fsSL -o coala-bears.zip $BEARS_ZIP_URL/master
+          pip install coala-bears.zip[alldeps]
+          coala --non-interactive
+          python setup.py docs
+          .ci/check_man.sh
+      - name: after_script
+        run: codecov
